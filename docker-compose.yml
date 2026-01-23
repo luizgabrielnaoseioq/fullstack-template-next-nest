@@ -24,3 +24,21 @@ services:
       - /app/node_modules
     env_file:
       - .env
+    depends_on:
+      - database
+
+  database:
+    image: postgres:16
+    container_name: database
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: database
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
