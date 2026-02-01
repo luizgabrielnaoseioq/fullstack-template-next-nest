@@ -1,8 +1,16 @@
 # 🚀 Fullstack Template — Next.js + NestJS + Prisma + Docker
 
-Template fullstack moderno para acelerar o desenvolvimento de aplicações web, SaaS e APIs.
+Template fullstack moderno, **pensado para produtividade em desenvolvimento** e **estabilidade em produção**.
 
-Este repositório foi criado para **não perder tempo com setup** e focar direto em produto.
+Este repositório serve como **base sólida** para:
+
+* aplicações web
+* APIs
+* SaaS
+* produtos próprios
+* freelas profissionais
+
+> ⚡ Menos setup. Mais produto.
 
 ---
 
@@ -10,9 +18,10 @@ Este repositório foi criado para **não perder tempo com setup** e focar direto
 
 ### Frontend
 
-* **Next.js**
+* **Next.js (App Router)**
 * **TypeScript**
-* Ambiente pronto via Docker
+* Estrutura preparada para páginas públicas e privadas
+* Consumo de API centralizado
 
 ### Backend
 
@@ -20,13 +29,16 @@ Este repositório foi criado para **não perder tempo com setup** e focar direto
 * **TypeScript**
 * **Prisma ORM**
 * **PostgreSQL**
-* Arquitetura modular
+* **Clean Architecture (pragmática)**
 
 ### Infra
 
 * **Docker + Docker Compose**
-* `.env.example` configurado
-* Containers orquestrados automaticamente
+* Dois ambientes:
+
+  * **DEV** → Docker apenas para banco
+  * **PROD** → aplicação totalmente containerizada
+* `.env.example` documentado
 
 ---
 
@@ -35,125 +47,280 @@ Este repositório foi criado para **não perder tempo com setup** e focar direto
 ```bash
 .
 ├── apps
-│   ├── frontend   # Next.js
-│   └── backend    # NestJS + Prisma
-├── docker-compose.yml
+│   ├── backend
+│   │   ├── prisma
+│   │   │   └── schema.prisma
+│   │   └── src
+│   │       ├── application
+│   │       │   ├── dto
+│   │       │   └── use-cases
+│   │       ├── domain
+│   │       │   ├── entities
+│   │       │   └── repositories
+│   │       ├── infra
+│   │       │   ├── config
+│   │       │   ├── database
+│   │       │   │   ├── prisma
+│   │       │   │   └── repositories
+│   │       │   └── http
+│   │       │       └── controllers
+│   │       ├── shared
+│   │       │   └── errors
+│   │       └── main.ts
+│   │
+│   └── frontend
+│       ├── app
+│       │   ├── (public)
+│       │   └── (private)
+│       ├── components
+│       ├── hooks
+│       ├── services
+│       │   └── api.ts
+│       ├── types
+│       └── utils
+│
+├── docker
+│   ├── docker-compose.dev.yml
+│   └── docker-compose.prod.yml
+│
 ├── .env.example
+├── .env
 └── README.md
 ```
 
 ---
 
+## 🧠 Filosofia do Template
+
+Este template segue alguns princípios claros:
+
+* **Desenvolvimento rápido primeiro**
+* **Arquitetura clara, sem overengineering**
+* **Separação de responsabilidades**
+* **Docker como ferramenta, não obstáculo**
+
+> Organização boa é a que **não atrapalha o desenvolvimento**
+> e **permite escalar quando necessário**.
+
+---
+
 ## ⚙️ Pré-requisitos
+
+### Para desenvolvimento (DEV)
+
+* Node.js (recomendado v20+)
+* pnpm
+* Docker
+* Docker Compose
+
+### Para produção (PROD)
 
 * Docker
 * Docker Compose
-* Git
-
-> ❌ Não é necessário instalar Node, Prisma ou Postgres localmente
 
 ---
 
-## 🚀 Como usar este template
+## 🚀 Ambiente de Desenvolvimento (DEV)
 
-### 1️⃣ Criar um projeto a partir do template
+No ambiente de desenvolvimento:
 
-* Clique em **“Use this template”** no GitHub
-* Crie um novo repositório
+* Frontend e backend rodam **localmente**
+* Docker é usado **apenas para o banco de dados**
+* `pnpm add` funciona normalmente
+* Hot reload rápido
 
-### 2️⃣ Clone o repositório
-
-```bash
-git clone <seu-repo>
-cd <seu-repo>
-```
-
-### 3️⃣ Configure as variáveis de ambiente
+### 1️⃣ Subir o banco de dados
 
 ```bash
-cp .env.example .env
+docker compose -f docker/docker-compose.dev.yml up
 ```
 
-> Ajuste os valores se desejar (porta, banco, etc)
+### 2️⃣ Backend
+
+```bash
+cd apps/backend
+pnpm install
+pnpm start:dev
+```
+
+### 3️⃣ Frontend
+
+```bash
+cd apps/frontend
+pnpm install
+pnpm dev
+```
 
 ---
 
-### 4️⃣ Suba tudo com Docker
-
-```bash
-docker-compose up --build
-```
-
-✅ Frontend
-✅ Backend
-✅ PostgreSQL
-✅ Prisma conectado
-
-Tudo sobe automaticamente 🚀
-
----
-
-## 🌐 Acessos padrão
+## 🌐 Acessos padrão (DEV)
 
 * Frontend: [http://localhost:3000](http://localhost:3000)
-* Backend: [http://localhost:3333](http://localhost:3333)
+* Backend: [http://localhost:3001](http://localhost:3001)
 
 ---
 
-## 🧬 Prisma
+## 🧬 Prisma (DEV)
 
-### Gerar client (se necessário)
+### Gerar o client
 
 ```bash
-docker compose exec backend npx prisma generate
+cd apps/backend
+pnpm prisma generate
 ```
 
 ### Rodar migrations
 
 ```bash
-docker compose exec backend npx prisma migrate dev
+pnpm prisma migrate dev
 ```
 
 ---
 
-## 🔄 Prisma + Postgres (opcional)
+## 🐳 Ambiente de Produção (PROD)
 
-Este template já vem com Prisma e PostgreSQL configurados.
+Em produção:
 
-Se não quiser usar:
+* Frontend, backend e banco rodam em containers
+* Código vem da **imagem Docker**
+* Sem volumes de código
+* Ambiente previsível e estável
 
-* Remova o serviço `db` do `docker-compose.yml`
-* Remova a pasta `prisma/`
-* Ajuste o backend conforme necessário
+### Subir ambiente completo
 
----
-
-## 📌 Objetivo do Template
-
-* Acelerar projetos
-* Evitar setup repetitivo
-* Servir como base para:
-
-  * SaaS
-  * Freelance
-  * APIs
-  * Produtos próprios
+```bash
+docker compose -f docker/docker-compose.prod.yml up --build
+```
 
 ---
 
-## 🧠 Filosofia
+## 🧼 Clean Architecture — Backend
 
-> Configure uma vez.
-> Reuse sempre.
-> Foque no que gera valor.
+A arquitetura do backend segue uma **Clean Arch pragmática**:
+
+### Camadas
+
+* **Domain**
+
+  * Entidades
+  * Contratos (repositórios)
+  * Não depende de framework
+
+* **Application**
+
+  * Casos de uso
+  * DTOs
+  * Orquestra regras de negócio
+
+* **Infra**
+
+  * Controllers (HTTP)
+  * Prisma
+  * Implementações concretas
+
+### Regra principal
+
+> Camadas internas **não conhecem** camadas externas.
+
+Exemplo:
+
+* Controller → Use Case ✅
+* Use Case → Prisma ❌
 
 ---
 
-## 🏷️ Versionamento
+## 🧪 CRUD de Exemplo
 
-Use tags para controlar evolução do template:
+O template já possui um **CRUD de User** como referência:
+
+* Entidade de domínio
+* Use case de criação
+* Controller HTTP
+* Repositório Prisma
+
+Esse CRUD serve como:
+
+* documentação viva
+* padrão para novas features
+* base para expansão do sistema
+
+---
+
+## 🌐 Organização do Frontend
+
+O frontend é organizado por **intenção**, não por tecnologia:
+
+* `(public)` → páginas públicas
+* `(private)` → páginas protegidas
+* `services/` → comunicação com API
+* `components/` → UI reutilizável
+* `hooks/` → lógica compartilhada
+
+Isso facilita:
+
+* manutenção
+* escalabilidade
+* separação futura (se necessário)
+
+---
+
+## 🔐 Variáveis de Ambiente
+
+Arquivo base:
+
+```bash
+.env.example
+```
+
+Exemplo:
+
+```env
+# FRONTEND
+FRONTEND_PORT=3000
+
+# BACKEND
+BACKEND_PORT=3001
+
+# DATABASE
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/database
+```
+
+---
+
+## 📌 Quando separar front e back?
+
+Este template **permite**, mas **não exige** separação imediata.
+
+Separar faz sentido quando:
+
+* deploys precisam ser independentes
+* times crescem
+* o projeto vira produto maior
+
+Até lá, manter juntos **simplifica e acelera**.
+
+---
+
+## 🏷️ Versionamento do Template
+
+Recomendado usar tags:
 
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
+
+---
+
+## 🎯 Objetivo Final
+
+Este template existe para:
+
+* acelerar ideias
+* reduzir setup repetitivo
+* servir como base confiável
+* evoluir junto com o projeto
+
+> **Construa rápido.
+> Organize com intenção.
+> Escale quando fizer sentido.**

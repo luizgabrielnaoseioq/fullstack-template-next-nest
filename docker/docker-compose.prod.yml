@@ -6,9 +6,6 @@ services:
     container_name: frontend
     ports:
       - "${FRONTEND_PORT}:3000"
-    volumes:
-      - ./apps/frontend:/app
-      - /app/node_modules
     env_file:
       - .env
     depends_on:
@@ -19,9 +16,6 @@ services:
     container_name: backend
     ports:
       - "${BACKEND_PORT}:3001"
-    volumes:
-      - ./apps/backend:/app
-      - /app/node_modules
     env_file:
       - .env
     depends_on:
